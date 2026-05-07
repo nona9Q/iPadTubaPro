@@ -5,16 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>iPad Tuba Pro</title>
     
-    <!-- アイコンの設定 -->
     <link rel="apple-touch-icon" href="tuba.png">
     <link rel="icon" href="tuba.ico">
 
-    <!-- セリフ体フォントの読み込み -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    
     <style>
+        /* ===================================================
+           フォントの設定（HTMLと同じ場所にファイルを置いてください）
+        =================================================== */
+        @font-face {
+            font-family: 'PlayfairDisplay';
+            src: url('PlayfairDisplay-Bold.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'NotoSerifJP';
+            src: url('NotoSerifJP-Regular.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'NotoSerifJP';
+            src: url('NotoSerifJP-Bold.otf') format('opentype');
+            font-weight: bold;
+            font-style: normal;
+        }
+
         :root {
-            /* 上品なゴールド系のカラーパレット */
             --brass-light: #f3d778;
             --brass-base: #d4af37;
             --brass-dark: #b5952f;
@@ -31,7 +50,7 @@
         }
         
         body {
-            font-family: 'Playfair Display', 'Noto Serif JP', serif;
+            font-family: 'PlayfairDisplay', 'NotoSerifJP', serif;
             background: var(--bg-dark);
             color: #333;
             margin: 0;
@@ -42,9 +61,7 @@
             position: fixed;
         }
 
-        /* -------------------------
-           リップスラー操作エリア（左側）
-        ------------------------- */
+        /* リップスラー操作エリア */
         #play-zone {
             flex: 1;
             background: radial-gradient(circle at center, #2a2a2a, #111);
@@ -65,9 +82,7 @@
             pointer-events: none;
         }
 
-        /* -------------------------
-           情報パネル・五線譜（中央）
-        ------------------------- */
+        /* 情報パネル・五線譜 */
         #info-panel {
             width: 320px;
             background: var(--panel-bg);
@@ -105,7 +120,6 @@
             color: #111;
         }
 
-        /* 五線譜エリア */
         #staff-container {
             background: #fffdf5;
             flex: 1;
@@ -116,12 +130,10 @@
             overflow: hidden;
         }
 
-        /* -------------------------
-           ピストンエリア（右側）
-        ------------------------- */
+        /* ピストンエリア */
         #piston-zone {
             width: 220px;
-            background: var(--bg-dark); /* 背景を黒に */
+            background: var(--bg-dark);
             display: flex;
             flex-direction: column;
             justify-content: space-around;
@@ -131,7 +143,6 @@
         .piston-btn {
             flex: 1;
             margin: 12px 0;
-            /* 控えめで上品なゴールド */
             background: linear-gradient(135deg, var(--brass-light), var(--brass-base));
             border-radius: 25px;
             display: flex;
@@ -140,7 +151,6 @@
             font-size: 3.5rem;
             font-weight: bold;
             color: #222;
-            /* スッキリした押し込み用の影 */
             box-shadow: 
                 inset 0 2px 4px rgba(255,255,255,0.6), 
                 0 8px 0 var(--brass-dark), 
@@ -158,9 +168,6 @@
                 0 4px 4px rgba(0,0,0,0.3);
         }
 
-        /* -------------------------
-           設定ボタン
-        ------------------------- */
         .setting-btn {
             background: #444;
             color: white;
@@ -173,7 +180,7 @@
             font-size: 1rem;
             cursor: pointer;
             box-shadow: 0 4px 0 #222;
-            font-family: 'Noto Serif JP', serif;
+            font-family: 'NotoSerifJP', serif;
             transition: transform 0.05s, box-shadow 0.05s;
         }
         .setting-btn:active {
@@ -201,18 +208,15 @@
         
         <div id="staff-container">
             <svg id="staff-svg" viewBox="0 0 200 350" preserveAspectRatio="xMidYMid meet">
-                <!-- 五線 -->
                 <line x1="10" y1="80" x2="190" y2="80" stroke="#333" stroke-width="1.5" />
                 <line x1="10" y1="100" x2="190" y2="100" stroke="#333" stroke-width="1.5" />
                 <line x1="10" y1="120" x2="190" y2="120" stroke="#333" stroke-width="1.5" />
                 <line x1="10" y1="140" x2="190" y2="140" stroke="#333" stroke-width="1.5" />
                 <line x1="10" y1="160" x2="190" y2="160" stroke="#333" stroke-width="1.5" />
                 
-                <!-- ヘ音記号 -->
                 <text x="15" y="145" font-size="100" fill="#222" font-family="serif" pointer-events="none">𝄢</text>
                 
                 <g id="ledger-lines"></g>
-                <!-- フラット記号 (x座標を少し左にずらして被りを解消) -->
                 <text id="flat-sign" x="75" y="0" font-size="36" fill="#111" font-family="serif" style="display:none;" pointer-events="none">♭</text>
                 <ellipse id="note-head" cx="120" cy="150" rx="11" ry="8" fill="#111" style="display:none;"/>
             </svg>
@@ -232,7 +236,7 @@ let masterGain = null;
 let oscillators = [];
 let formantFilter = null;
 
-const baseFreq = 29.135; // ペダルトーン B♭0
+const baseFreq = 29.135; 
 const semitoneRatio = Math.pow(2, 1/12);
 const activePistons = { h: false, u: false, i: false, l: false };
 let isPlaying = false;
@@ -272,17 +276,14 @@ function initAudio() {
 function updateSound(yRatio) {
     if (!audioCtx) return;
     lastY = yRatio;
-
     const harmonic = Math.max(1, Math.min(8, Math.round((1 - yRatio) * 7 + 1)));
-    
     let drops = 0;
-    if (activePistons.u) drops += 1; // 2番
-    if (activePistons.h) drops += 2; // 1番
-    if (activePistons.i) drops += 3; // 3番
-    if (activePistons.l) drops += 5; // 4番
+    if (activePistons.u) drops += 1;
+    if (activePistons.h) drops += 2;
+    if (activePistons.i) drops += 3;
+    if (activePistons.l) drops += 5;
 
     if (harmonic === lastHarmonic && drops === lastDrops) return;
-    
     lastHarmonic = harmonic;
     lastDrops = drops;
 
@@ -311,14 +312,11 @@ function updateStaff(freq) {
     noteHead.style.display = 'block';
 
     const n = Math.round(12 * Math.log2(freq / 440) + 69);
-    
     const diatonicSteps = [0, 1, 1, 2, 2, 3, 4, 4, 5, 5, 6, 6];
     const isFlat = [false, true, false, true, false, false, true, false, true, false, true, false];
-    
     const octave = Math.floor(n / 12) - 1;
     const pitchClass = n % 12;
     const step = octave * 7 + diatonicSteps[pitchClass];
-
     const stepOffset = step - 18; 
     const yPos = 160 - (stepOffset * 10);
     noteHead.setAttribute('cy', yPos);
@@ -353,28 +351,21 @@ function drawLedger(y, group) {
     group.appendChild(line);
 }
 
-// ============================================
-// イベント制御 (マルチタッチ対応)
-// ============================================
 const playZone = document.getElementById('play-zone');
-
 const handlePlayStart = (e) => {
     e.preventDefault();
     initAudio();
     playZone.setPointerCapture(e.pointerId);
     isPlaying = true;
     masterGain.gain.setTargetAtTime(0.7, audioCtx.currentTime, 0.02);
-    
     const rect = playZone.getBoundingClientRect();
     updateSound(Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height)));
 };
-
 const handlePlayMove = (e) => {
     if (!isPlaying) return;
     const rect = playZone.getBoundingClientRect();
     updateSound(Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height)));
 };
-
 const handlePlayEnd = (e) => {
     isPlaying = false;
     if (masterGain) masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
@@ -396,19 +387,13 @@ document.querySelectorAll('.piston-btn').forEach(btn => {
         btn.setPointerCapture(e.pointerId);
         activePistons[p] = true;
         btn.classList.add('active');
-        if (isPlaying) {
-            lastDrops = -1;
-            updateSound(lastY);
-        }
+        if (isPlaying) { lastDrops = -1; updateSound(lastY); }
     };
     const release = (e) => {
         btn.releasePointerCapture(e.pointerId);
         activePistons[p] = false;
         btn.classList.remove('active');
-        if (isPlaying) {
-            lastDrops = -1;
-            updateSound(lastY);
-        }
+        if (isPlaying) { lastDrops = -1; updateSound(lastY); }
     };
     btn.addEventListener('pointerdown', press);
     btn.addEventListener('pointerup', release);
