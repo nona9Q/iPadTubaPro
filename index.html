@@ -9,7 +9,6 @@
     <link rel="icon" href="tuba.ico">
 
     <style>
-        /* ローカルフォント（すべてセリフ体） */
         @font-face {
             font-family: 'PlayfairDisplay';
             src: url('PlayfairDisplay-Bold.ttf') format('truetype');
@@ -30,7 +29,6 @@
         }
 
         :root {
-            /* 真鍮カラーの定義 */
             --brass-light: #fcebb6;
             --brass-base: #d4af37;
             --brass-mid: #b58d19;
@@ -48,9 +46,8 @@
         }
         
         body {
-            /* すべてセリフ体に統一 */
             font-family: 'PlayfairDisplay', 'NotoSerifJP', serif;
-            background: #1a0b00; /* マホガニー風の深い色 */
+            background: #1a0b00; 
             color: #333;
             margin: 0;
             height: 100vh;
@@ -71,40 +68,63 @@
         }
 
         /* -------------------------------------
-           プレイゾーン（ベルベット風クッション＋真鍮枠）
+           プレイゾーン
         ------------------------------------- */
         #play-zone {
             flex: 1;
             background: radial-gradient(circle at center, #4a1515, #140404);
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             border: 8px ridge var(--brass-dark);
             box-shadow: inset 0 0 50px rgba(0,0,0,0.9);
             cursor: pointer;
             order: 1;
+            overflow: hidden;
         }
-        #play-zone::after {
-            content: "LIP SLUR ZONE\A (Slide Up & Down)";
-            white-space: pre-wrap;
+        #play-zone-bg-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
             text-align: center;
-            color: rgba(212, 175, 55, 0.3);
+            color: rgba(212, 175, 55, 0.15);
             font-size: 2.5rem;
             font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.9), -1px -1px 1px rgba(255,255,255,0.1);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.9), -1px -1px 1px rgba(255,255,255,0.05);
             pointer-events: none;
+            white-space: pre-wrap;
+            z-index: 1;
+        }
+
+        /* ガイド線と音名 */
+        .harmonic-line {
+            position: absolute;
+            left: 0; right: 0;
+            height: 1px;
+            background: rgba(212, 175, 55, 0.3);
+            box-shadow: 0 1px 1px rgba(0,0,0,0.5);
+            pointer-events: none;
+            z-index: 2;
+        }
+        .harmonic-label {
+            position: absolute;
+            right: 12px;
+            color: rgba(212, 175, 55, 0.7);
+            font-size: 1.1rem;
+            font-family: 'PlayfairDisplay', serif;
+            font-style: italic;
+            pointer-events: none;
+            text-shadow: 1px 1px 3px #000;
+            z-index: 2;
         }
 
         /* -------------------------------------
-           情報パネル（真鍮プレート風）
+           情報パネル
         ------------------------------------- */
         #info-panel {
             width: 320px;
             background: linear-gradient(135deg, #e2c779, #b89435, #8b6e22);
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 26px 20px; /* ネジ避け */
             border-left: 2px solid rgba(255,255,255,0.4);
             border-right: 2px solid rgba(0,0,0,0.6);
             box-shadow: inset 0 0 30px rgba(90, 69, 18, 0.6);
@@ -113,7 +133,6 @@
             position: relative;
         }
 
-        /* パネル四隅のマイナスネジ */
         .screw {
             position: absolute;
             width: 14px; height: 14px;
@@ -129,20 +148,20 @@
             transform: translateY(-50%) rotate(45deg);
             box-shadow: 0 1px 0 rgba(255,255,255,0.3);
         }
-        .top-left { top: 12px; left: 12px; }
-        .top-right { top: 12px; right: 12px; transform: rotate(20deg); }
-        .bottom-left { bottom: 12px; left: 12px; transform: rotate(-30deg); }
-        .bottom-right { bottom: 12px; right: 12px; transform: rotate(60deg); }
+        .top-left { top: 8px; left: 8px; }
+        .top-right { top: 8px; right: 8px; transform: rotate(20deg); }
+        .bottom-left { bottom: 8px; left: 8px; transform: rotate(-30deg); }
+        .bottom-right { bottom: 8px; right: 8px; transform: rotate(60deg); }
 
         #top-controls {
-            height: 50px;
+            height: 40px;
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 2;
+            margin-bottom: 5px;
         }
 
-        /* エッチング（彫り込み）風の文字 */
         #freq-display {
             height: 30px;
             font-size: 1.4rem;
@@ -158,7 +177,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             z-index: 2;
         }
         #note-name {
@@ -168,10 +187,9 @@
             text-shadow: 0 1px 0 rgba(255,255,255,0.6), 0 -1px 0 rgba(0,0,0,0.2);
         }
 
-        /* 古い羊皮紙風の楽譜エリア */
         #staff-container {
+            flex: 1; /* 高さを自動伸縮にしてネジとの被りを防ぐ */
             background: radial-gradient(circle at center, #fdf6e3, #e1d3a5);
-            height: calc(100vh - 200px);
             border-radius: 4px;
             position: relative;
             box-shadow: inset 0 0 15px rgba(100, 70, 20, 0.4), 0 5px 10px rgba(0,0,0,0.3);
@@ -181,7 +199,7 @@
         }
 
         /* -------------------------------------
-           ピストンエリア（黒いシリンダー風）
+           ピストンエリア
         ------------------------------------- */
         #piston-zone {
             width: 220px;
@@ -196,12 +214,11 @@
             box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
         }
 
-        /* 立体的な真鍮のピストン（トップに白蝶貝風の装飾） */
         .piston-btn {
             width: 85%;
             height: var(--btn-height); 
             margin: 12px 0;
-            background: linear-gradient(to bottom, var(--brass-light), var(--brass-base) 40%, var(--brass-mid) 60%, var(--brass-dark));
+            background: linear-gradient(135deg, var(--brass-light), var(--brass-base) 40%, var(--brass-mid) 60%, var(--brass-dark));
             border: 1px solid var(--brass-shadow);
             border-radius: 12px;
             display: flex;
@@ -209,40 +226,29 @@
             justify-content: center;
             font-size: 3.5rem;
             font-weight: bold;
+            color: #3a2a0a;
+            text-shadow: 0 1px 1px rgba(255,255,255,0.5), 0 -1px 1px rgba(0,0,0,0.3);
             position: relative;
+            /* 自然な押し込み感のための影設定 */
             box-shadow: 
-                inset 0 1px 2px rgba(255,255,255,0.9),
-                0 15px 0 #54400f, 
-                0 15px 15px rgba(0,0,0,0.8);
-            transition: transform 0.05s, box-shadow 0.05s;
+                inset 0 2px 4px rgba(255,255,255,0.7),
+                inset 0 -2px 4px rgba(0,0,0,0.3),
+                0 10px 0 #4a350a, 
+                0 14px 15px rgba(0,0,0,0.8);
+            /* スムーズで物理的なイージング */
+            transition: transform 0.08s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                        box-shadow 0.08s cubic-bezier(0.2, 0.8, 0.2, 1);
             cursor: pointer;
             flex-shrink: 0;
         }
-
-        /* 白蝶貝（パール）のトップ */
-        .piston-btn::before {
-            content: '';
-            position: absolute;
-            top: 6%; left: 4%; width: 92%; height: 88%;
-            background: radial-gradient(circle at top left, #fff, #f0f0f0 40%, #d0d0d0);
-            border-radius: 8px;
-            box-shadow: inset 0 -2px 5px rgba(0,0,0,0.2), 0 2px 2px rgba(255,255,255,0.9);
-            z-index: 1;
-        }
-
-        .piston-btn span {
-            position: relative;
-            z-index: 2;
-            color: #222;
-            text-shadow: 0 1px 0 #fff;
-        }
         
         .piston-btn.active {
-            transform: translateY(12px);
+            transform: translateY(10px);
             box-shadow: 
-                inset 0 1px 2px rgba(255,255,255,0.9),
-                0 3px 0 #54400f, 
-                0 4px 5px rgba(0,0,0,0.8);
+                inset 0 2px 4px rgba(255,255,255,0.7),
+                inset 0 -2px 4px rgba(0,0,0,0.3),
+                0 0px 0 #4a350a, 
+                0 2px 4px rgba(0,0,0,0.8);
         }
 
         /* -------------------------------------
@@ -252,7 +258,7 @@
             background: linear-gradient(to bottom, #ece0b9, var(--brass-base));
             color: #3a2a0a;
             border: 1px solid var(--brass-shadow);
-            padding: 8px 24px;
+            padding: 6px 20px;
             border-radius: 6px;
             font-size: 1.1rem;
             font-weight: bold;
@@ -279,7 +285,6 @@
             display: flex;
         }
 
-        /* 木箱と真鍮のプレート風モーダル */
         .modal-content {
             background: radial-gradient(circle at center, #381e10, #140904);
             padding: 30px;
@@ -308,7 +313,6 @@
             text-shadow: 0 2px 2px #000;
         }
 
-        /* アナログミキサーのフェーダー風スライダー */
         input[type=range] {
             -webkit-appearance: none;
             width: 55%;
@@ -334,7 +338,6 @@
             cursor: pointer;
         }
 
-        /* 機械的なトグルスイッチ */
         .switch {
             position: relative; display: inline-block;
             width: 60px; height: 28px;
@@ -388,7 +391,10 @@
 <body>
 
     <div id="app-container">
-        <div id="play-zone"></div>
+        <div id="play-zone">
+            <div id="play-zone-bg-text">LIP SLUR ZONE<br>(Slide Up & Down)</div>
+            <!-- 音程ガイドはJSで自動生成します -->
+        </div>
 
         <div id="info-panel">
             <div class="screw top-left"></div>
@@ -404,7 +410,6 @@
             
             <div id="staff-container">
                 <svg id="staff-svg" viewBox="0 0 200 350" preserveAspectRatio="xMidYMid meet">
-                    <!-- 五線 -->
                     <line x1="10" y1="80" x2="190" y2="80" stroke="#4a3818" stroke-width="1.5" />
                     <line x1="10" y1="100" x2="190" y2="100" stroke="#4a3818" stroke-width="1.5" />
                     <line x1="10" y1="120" x2="190" y2="120" stroke="#4a3818" stroke-width="1.5" />
@@ -420,11 +425,10 @@
         </div>
 
         <div id="piston-zone">
-            <!-- spanタグを追加して白蝶貝の上に文字を乗せる -->
-            <div id="btn-1" class="piston-btn" data-piston="h"><span>1</span></div>
-            <div id="btn-2" class="piston-btn" data-piston="u"><span>2</span></div>
-            <div id="btn-3" class="piston-btn" data-piston="i"><span>3</span></div>
-            <div id="btn-4" class="piston-btn" data-piston="l"><span>4</span></div>
+            <div id="btn-1" class="piston-btn" data-piston="h">1</div>
+            <div id="btn-2" class="piston-btn" data-piston="u">2</div>
+            <div id="btn-3" class="piston-btn" data-piston="i">3</div>
+            <div id="btn-4" class="piston-btn" data-piston="l">4</div>
         </div>
     </div>
 
@@ -467,6 +471,91 @@
     </div>
 
 <script>
+// ==========================================
+// 初期化：Play Zoneのガイド生成
+// ==========================================
+const playZone = document.getElementById('play-zone');
+const notes = ["B♭0", "B♭1", "F2", "B♭2", "D3", "F3", "A♭3", "C4"];
+
+for (let i = 1; i <= 8; i++) {
+    // 文字（ラベル）の配置：各倍音領域の中央
+    const centerPercent = ((i - 1) / 7) * 100;
+    const label = document.createElement('div');
+    label.className = 'harmonic-label';
+    label.innerText = notes[i - 1];
+    label.style.bottom = `calc(${centerPercent}% - 0.75rem)`;
+    playZone.appendChild(label);
+
+    // 境界線の配置（領域と領域の間）
+    if (i < 8) {
+        const borderPercent = ((i - 0.5) / 7) * 100;
+        const line = document.createElement('div');
+        line.className = 'harmonic-line';
+        line.style.bottom = `${borderPercent}%`;
+        playZone.appendChild(line);
+    }
+}
+
+// ==========================================
+// 設定の保存と復元（LocalStorage）
+// ==========================================
+const sizeSlider = document.getElementById('size-slider');
+const layoutToggle = document.getElementById('layout-toggle');
+const reverseToggle = document.getElementById('reverse-toggle');
+const xVolToggle = document.getElementById('x-vol-toggle');
+
+function applySettings() {
+    document.documentElement.style.setProperty('--btn-height', sizeSlider.value + 'px');
+    
+    const pistonZone = document.getElementById('piston-zone');
+    if (layoutToggle.checked) {
+        pistonZone.style.order = "1";
+        playZone.style.order = "3";
+    } else {
+        playZone.style.order = "1";
+        pistonZone.style.order = "3";
+    }
+    pistonZone.style.flexDirection = reverseToggle.checked ? 'column-reverse' : 'column';
+}
+
+function saveSettings() {
+    const settings = {
+        size: sizeSlider.value,
+        layout: layoutToggle.checked,
+        reverse: reverseToggle.checked,
+        xVol: xVolToggle.checked
+    };
+    localStorage.setItem('tubaSettings', JSON.stringify(settings));
+}
+
+function loadSettings() {
+    const saved = localStorage.getItem('tubaSettings');
+    if (saved) {
+        try {
+            const settings = JSON.parse(saved);
+            if (settings.size) sizeSlider.value = settings.size;
+            if (settings.layout !== undefined) layoutToggle.checked = settings.layout;
+            if (settings.reverse !== undefined) reverseToggle.checked = settings.reverse;
+            if (settings.xVol !== undefined) xVolToggle.checked = settings.xVol;
+        } catch(e) {}
+    }
+    applySettings();
+}
+
+[sizeSlider, layoutToggle, reverseToggle, xVolToggle].forEach(el => {
+    el.addEventListener('input', () => { applySettings(); saveSettings(); });
+    el.addEventListener('change', () => { applySettings(); saveSettings(); });
+});
+loadSettings(); // ページロード時に適用
+
+// モーダル開閉
+const modal = document.getElementById('settings-modal');
+document.getElementById('open-settings').addEventListener('click', () => modal.classList.add('show'));
+document.getElementById('close-settings').addEventListener('click', () => modal.classList.remove('show'));
+
+// ==========================================
+// タッチ制御とオーディオ
+// ==========================================
 document.addEventListener('touchstart', (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 let lastTouchEnd = 0;
 document.addEventListener('touchend', (e) => {
@@ -476,51 +565,14 @@ document.addEventListener('touchend', (e) => {
 }, { passive: false });
 document.addEventListener('dblclick', (e) => { e.preventDefault(); }, { passive: false });
 
-const modal = document.getElementById('settings-modal');
-document.getElementById('open-settings').addEventListener('click', () => modal.classList.add('show'));
-document.getElementById('close-settings').addEventListener('click', () => modal.classList.remove('show'));
-
-document.getElementById('size-slider').addEventListener('input', (e) => {
-    document.documentElement.style.setProperty('--btn-height', e.target.value + 'px');
-});
-
-document.getElementById('layout-toggle').addEventListener('change', (e) => {
-    const playZone = document.getElementById('play-zone');
-    const pistonZone = document.getElementById('piston-zone');
-    if (e.target.checked) {
-        pistonZone.style.order = "1";
-        playZone.style.order = "3";
-    } else {
-        playZone.style.order = "1";
-        pistonZone.style.order = "3";
-    }
-});
-
-document.getElementById('reverse-toggle').addEventListener('change', (e) => {
-    document.getElementById('piston-zone').style.flexDirection = e.target.checked ? 'column-reverse' : 'column';
-});
-
-const xVolToggle = document.getElementById('x-vol-toggle');
-
-let audioCtx = null;
-let masterGain = null;
-let oscillators = [];
-let formantFilter = null;
-let isAudioUnlocked = false;
-
+let audioCtx = null, masterGain = null, oscillators = [], formantFilter = null, isAudioUnlocked = false;
 const baseFreq = 29.135; 
 const semitoneRatio = Math.pow(2, 1/12);
 
 const activePistons = { h: false, u: false, i: false, l: false };
 const pistonPointers = { h: null, u: null, i: null, l: null };
-let isPlaying = false;
-let activePlayPointerId = null; 
-
-let currentX = 0;
-let currentY = 0.5;
-let lastHarmonic = -1;
-let lastDrops = -1;
-let lastRenderedFreq = -1;
+let isPlaying = false, activePlayPointerId = null; 
+let currentX = 0, currentY = 0.5, lastHarmonic = -1, lastDrops = -1, lastRenderedFreq = -1;
 
 function ensureAudioContext() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -565,7 +617,6 @@ function initAudio() {
     masterGain.connect(audioCtx.destination);
 }
 
-const playZone = document.getElementById('play-zone');
 function updatePointerCoordinates(e) {
     const rect = playZone.getBoundingClientRect();
     currentY = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
@@ -683,6 +734,9 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
+// ==========================================
+// 五線譜の描画
+// ==========================================
 function updateStaff(freq) {
     if (Math.abs(freq - lastRenderedFreq) < 0.1) return;
     lastRenderedFreq = freq;
