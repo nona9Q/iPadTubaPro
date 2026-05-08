@@ -80,17 +80,19 @@
             order: 1;
             overflow: hidden;
         }
+        
+        /* TUBA テキスト */
         #play-zone-bg-text {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            color: rgba(212, 175, 55, 0.15);
-            font-size: 2.5rem;
+            color: rgba(212, 175, 55, 0.1);
+            font-size: 5.5rem;
+            letter-spacing: 0.5rem;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.9), -1px -1px 1px rgba(255,255,255,0.05);
             pointer-events: none;
-            white-space: pre-wrap;
             z-index: 1;
         }
 
@@ -99,16 +101,16 @@
             position: absolute;
             left: 0; right: 0;
             height: 1px;
-            background: rgba(212, 175, 55, 0.3);
+            background: rgba(212, 175, 55, 0.25);
             box-shadow: 0 1px 1px rgba(0,0,0,0.5);
             pointer-events: none;
             z-index: 2;
         }
         .harmonic-label {
             position: absolute;
-            right: 12px;
-            color: rgba(212, 175, 55, 0.7);
-            font-size: 1.1rem;
+            right: 12px; /* 端から少し離して見切れを防止 */
+            color: rgba(212, 175, 55, 0.6);
+            font-size: 0.95rem; /* 枠に収まるサイズ */
             font-family: 'PlayfairDisplay', serif;
             font-style: italic;
             pointer-events: none;
@@ -124,7 +126,7 @@
             background: linear-gradient(135deg, #e2c779, #b89435, #8b6e22);
             display: flex;
             flex-direction: column;
-            padding: 26px 20px; /* ネジ避け */
+            padding: 26px 20px;
             border-left: 2px solid rgba(255,255,255,0.4);
             border-right: 2px solid rgba(0,0,0,0.6);
             box-shadow: inset 0 0 30px rgba(90, 69, 18, 0.6);
@@ -188,7 +190,7 @@
         }
 
         #staff-container {
-            flex: 1; /* 高さを自動伸縮にしてネジとの被りを防ぐ */
+            flex: 1; 
             background: radial-gradient(circle at center, #fdf6e3, #e1d3a5);
             border-radius: 4px;
             position: relative;
@@ -229,13 +231,11 @@
             color: #3a2a0a;
             text-shadow: 0 1px 1px rgba(255,255,255,0.5), 0 -1px 1px rgba(0,0,0,0.3);
             position: relative;
-            /* 自然な押し込み感のための影設定 */
             box-shadow: 
                 inset 0 2px 4px rgba(255,255,255,0.7),
                 inset 0 -2px 4px rgba(0,0,0,0.3),
                 0 10px 0 #4a350a, 
                 0 14px 15px rgba(0,0,0,0.8);
-            /* スムーズで物理的なイージング */
             transition: transform 0.08s cubic-bezier(0.2, 0.8, 0.2, 1), 
                         box-shadow 0.08s cubic-bezier(0.2, 0.8, 0.2, 1);
             cursor: pointer;
@@ -392,8 +392,8 @@
 
     <div id="app-container">
         <div id="play-zone">
-            <div id="play-zone-bg-text">LIP SLUR ZONE<br>(Slide Up & Down)</div>
-            <!-- 音程ガイドはJSで自動生成します -->
+            <div id="play-zone-bg-text">TUBA</div>
+            <!-- 音程ガイドはJSで自動生成 -->
         </div>
 
         <div id="info-panel">
@@ -418,8 +418,9 @@
                     <text x="15" y="145" font-size="100" fill="#3a2a0a" font-family="serif" pointer-events="none">𝄢</text>
                     
                     <g id="ledger-lines"></g>
-                    <text id="flat-sign" x="75" y="0" font-size="36" fill="#2a1a05" font-family="serif" style="display:none;" pointer-events="none">♭</text>
-                    <ellipse id="note-head" cx="120" cy="150" rx="11" ry="8" fill="#2a1a05" style="display:none;"/>
+                    <!-- 初期位置は画面外（-1000）にして確実に隠す -->
+                    <text id="flat-sign" x="75" y="-1000" font-size="36" fill="#2a1a05" font-family="serif" pointer-events="none">♭</text>
+                    <ellipse id="note-head" cx="120" cy="-1000" rx="11" ry="8" fill="#2a1a05" />
                 </svg>
             </div>
         </div>
@@ -478,15 +479,15 @@ const playZone = document.getElementById('play-zone');
 const notes = ["B♭0", "B♭1", "F2", "B♭2", "D3", "F3", "A♭3", "C4"];
 
 for (let i = 1; i <= 8; i++) {
-    // 文字（ラベル）の配置：各倍音領域の中央
+    // 文字（ラベル）の配置
     const centerPercent = ((i - 1) / 7) * 100;
     const label = document.createElement('div');
     label.className = 'harmonic-label';
     label.innerText = notes[i - 1];
-    label.style.bottom = `calc(${centerPercent}% - 0.75rem)`;
+    label.style.bottom = `calc(${centerPercent}% - 0.5rem)`;
     playZone.appendChild(label);
 
-    // 境界線の配置（領域と領域の間）
+    // 境界線の配置
     if (i < 8) {
         const borderPercent = ((i - 0.5) / 7) * 100;
         const line = document.createElement('div');
@@ -546,9 +547,8 @@ function loadSettings() {
     el.addEventListener('input', () => { applySettings(); saveSettings(); });
     el.addEventListener('change', () => { applySettings(); saveSettings(); });
 });
-loadSettings(); // ページロード時に適用
+loadSettings(); 
 
-// モーダル開閉
 const modal = document.getElementById('settings-modal');
 document.getElementById('open-settings').addEventListener('click', () => modal.classList.add('show'));
 document.getElementById('close-settings').addEventListener('click', () => modal.classList.remove('show'));
@@ -572,7 +572,7 @@ const semitoneRatio = Math.pow(2, 1/12);
 const activePistons = { h: false, u: false, i: false, l: false };
 const pistonPointers = { h: null, u: null, i: null, l: null };
 let isPlaying = false, activePlayPointerId = null; 
-let currentX = 0, currentY = 0.5, lastHarmonic = -1, lastDrops = -1, lastRenderedFreq = -1;
+let currentX = 0, currentY = 0.5, lastHarmonic = -1, lastDrops = -1;
 
 function ensureAudioContext() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -735,26 +735,22 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // ==========================================
-// 五線譜の描画
+// 五線譜の描画（残像バグ完全防止版）
 // ==========================================
 function updateStaff(freq) {
-    if (Math.abs(freq - lastRenderedFreq) < 0.1) return;
-    lastRenderedFreq = freq;
-
     const noteHead = document.getElementById('note-head');
     const ledgerGroup = document.getElementById('ledger-lines');
     const noteText = document.getElementById('note-name');
     const flatSign = document.getElementById('flat-sign');
     
+    // 音が止まった時：黒玉とフラットを画面の遥か上（-1000）へ飛ばして確実に消す
     if (!isPlaying || freq < 10) {
-        noteHead.style.display = 'none';
-        flatSign.style.display = 'none';
+        noteHead.setAttribute('cy', '-1000');
+        flatSign.setAttribute('y', '-1000');
         while (ledgerGroup.firstChild) ledgerGroup.removeChild(ledgerGroup.firstChild);
         noteText.innerHTML = "---";
-        lastRenderedFreq = -1; 
         return;
     }
-    noteHead.style.display = 'block';
 
     const n = Math.round(12 * Math.log2(freq / 440) + 69);
     const diatonicSteps = [0, 1, 1, 2, 2, 3, 4, 4, 5, 5, 6, 6];
@@ -764,13 +760,13 @@ function updateStaff(freq) {
     const step = octave * 7 + diatonicSteps[pitchClass];
     const stepOffset = step - 18; 
     const yPos = 160 - (stepOffset * 10);
+    
     noteHead.setAttribute('cy', yPos);
 
     if (isFlat[pitchClass]) {
         flatSign.setAttribute('y', yPos + 12);
-        flatSign.style.display = 'block';
     } else {
-        flatSign.style.display = 'none';
+        flatSign.setAttribute('y', '-1000');
     }
 
     const namesFlat = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"];
